@@ -665,7 +665,11 @@ int f2fs_recover_fsync_data(struct f2fs_sb_info *sbi, bool check_only)
 	need_writecp = true;
 
 	/* step #2: recover data */
+<<<<<<< HEAD
 	err = recover_data(sbi, &inode_list, &dir_list);
+=======
+	err = recover_data(sbi, &inode_list);
+>>>>>>> 139211c... f2fs: clean up argument of recover_data
 	if (!err)
 		f2fs_bug_on(sbi, !list_empty(&inode_list));
 skip:
