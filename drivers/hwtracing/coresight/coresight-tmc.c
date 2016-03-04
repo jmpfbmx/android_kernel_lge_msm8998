@@ -1997,13 +1997,10 @@ static int tmc_probe(struct amba_device *adev, const struct amba_id *id)
 
 err_misc_register:
 	coresight_unregister(drvdata->csdev);
-<<<<<<< HEAD
-=======
 err_devm_kzalloc:
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR)
 		dma_free_coherent(dev, drvdata->size,
 				drvdata->vaddr, drvdata->paddr);
->>>>>>> 43ea28e... coresight: etm4x: Check every parameter used by dma_xx_coherent.
 	return ret;
 }
 
