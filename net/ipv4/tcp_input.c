@@ -4514,7 +4514,6 @@ static void tcp_ofo_queue(struct sock *sk)
 		p = rb_next(p);
 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
 
-		__skb_unlink(skb, &tp->out_of_order_queue);
 #ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
 		/* In case of MPTCP, the segment may be empty if it's a
 		 * non-data DATA_FIN. (see beginning of tcp_data_queue)
