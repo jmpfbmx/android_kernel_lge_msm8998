@@ -1055,7 +1055,7 @@ kill:
 		trace_almk_shrink(1, ret, other_free, other_file, 0);
 		rcu_read_unlock();
 
-		handle_lmk_event(selected, min_score_adj);
+		handle_lmk_event(selected, selected_tasksize, min_score_adj);
 	}
 
 	lowmem_print(4, "lowmem_scan %lu, %x, return %lu\n",
