@@ -22,6 +22,7 @@
 #include <linux/user-return-notifier.h>
 #include <linux/nospec.h>
 #include <linux/uprobes.h>
+#include <linux/syscalls.h>
 
 #include <asm/desc.h>
 #include <asm/traps.h>
@@ -69,7 +70,7 @@ static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
 long syscall_trace_enter(struct pt_regs *regs)
 {
 	u32 arch = is_ia32_task() ? AUDIT_ARCH_I386 : AUDIT_ARCH_X86_64;
-{
+
 	struct thread_info *ti = pt_regs_to_thread_info(regs);
 	unsigned long ret = 0;
 	bool emulated = false;
@@ -206,6 +207,8 @@ __visible inline void prepare_exit_to_usermode(struct pt_regs *regs)
 {
 	struct thread_info *ti = pt_regs_to_thread_info(regs);
 	u32 cached_flags;
+
+	addr_limit_user_check();
 
 	if (IS_ENABLED(CONFIG_PROVE_LOCKING) && WARN_ON(!irqs_disabled()))
 		local_irq_disable();

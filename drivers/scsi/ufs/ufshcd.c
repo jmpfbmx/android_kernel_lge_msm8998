@@ -9105,7 +9105,6 @@ int ufshcd_system_resume(struct ufs_hba *hba)
 {
 	int ret = 0;
 	ktime_t start = ktime_get();
-
 	if (!hba)
 		return -EINVAL;
 
@@ -9151,7 +9150,6 @@ out:
 		hba->curr_dev_pwr_mode,
 		hba->uic_link_state);
 	return ret;
-
 }
 EXPORT_SYMBOL(ufshcd_runtime_suspend);
 

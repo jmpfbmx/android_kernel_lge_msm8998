@@ -48,6 +48,11 @@ static unsigned int num_devices = 1;
 #else
 static unsigned int num_devices = 2;
 #endif
+/*
+ * Pages that compress to sizes equals or greater than this are stored
+ * uncompressed in memory.
+ */
+static size_t huge_class_size;
 
 static void zram_free_page(struct zram *zram, size_t index);
 
@@ -959,6 +964,8 @@ static bool zram_meta_alloc(struct zram *zram, u64 disksize)
 		return false;
 	}
 
+	if (!huge_class_size)
+		huge_class_size = zs_huge_class_size(zram->mem_pool);
 	return true;
 }
 
@@ -1145,7 +1152,7 @@ compress_again:
 		return ret;
 	}
 
-	if (unlikely(comp_len > max_zpage_size)) {
+	if (unlikely(comp_len >= huge_class_size)) {
 		comp_len = PAGE_SIZE;
 		if (zram_wb_enabled(zram) && allow_wb) {
 			zcomp_stream_put(zram->comp);
@@ -1745,6 +1752,8 @@ static int zram_add(void)
 		zram->disk->queue->limits.discard_zeroes_data = 0;
 	queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, zram->disk->queue);
 
+	zram->disk->queue->backing_dev_info.capabilities |=
+					BDI_CAP_STABLE_WRITES;
 	disk_to_dev(zram->disk)->groups = zram_disk_attr_groups;
 	add_disk(zram->disk);
 

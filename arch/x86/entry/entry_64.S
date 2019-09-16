@@ -188,7 +188,7 @@ entry_SYSCALL_64_fastpath:
 	and	%rcx, %rax
 	movq	%r10, %rcx
 
-/*
+	/*
 	 * This call instruction is handled specially in stub_ptregs_64.
 	 * It might end up jumping to the slow path.  If it jumps, RAX is
 	 * clobbered.
@@ -262,6 +262,7 @@ GLOBAL(int_ret_from_sys_call_irqs_off)
 	/* Do syscall entry tracing */
 tracesys:
 	SAVE_EXTRA_REGS
+	movq	%rsp, %rdi
 	call	syscall_trace_enter
 
 	/*

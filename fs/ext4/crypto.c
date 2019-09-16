@@ -455,7 +455,7 @@ errout:
 	return err;
 }
 
-bool ext4_valid_enc_modes(uint32_t contents_mode, uint32_t filenames_mode)
+bool ext4_valid_contents_enc_mode(uint32_t mode)
 {
 	if (contents_mode == EXT4_ENCRYPTION_MODE_AES_256_XTS ||
 			contents_mode == EXT4_ENCRYPTION_MODE_PRIVATE) {
