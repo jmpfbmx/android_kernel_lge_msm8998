@@ -403,3 +403,10 @@ int lge_mdss_dsi_panel_init_sub(struct lge_mdss_dsi_ctrl_pdata *lge_extra)
 	return rc;
 }
 #endif
+
+int lge_ddic_ops_init(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
+{
+	int rc = 0;
+
+	return rc;
+}
