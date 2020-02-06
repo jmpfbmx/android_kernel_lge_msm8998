@@ -777,7 +777,7 @@ enum tfa98xx_dmem tfa98xx_filter_mem(tfa98xx_handle_t dev, int filter_index, uns
 		case 0x72:
 		default:
 			/* unsupported case, possibly intermediate version */
-			return TFA_ERROR;
+			return TFA98XX_DMEM_ERR;
 			_ASSERT(0);
 		}
 	}
@@ -895,7 +895,7 @@ enum tfa98xx_error tfa98xx_set_saam_use_case(int samstream)
 
 	if (devcount < 1) {
 		pr_err("No or wrong container file loaded\n");
-		return tfa_error_bad_param;
+		return TFA98XX_ERROR_BAD_PARAMETER;
 	}
 
 	for (dev = 0; dev < devcount; dev++)
@@ -920,7 +920,7 @@ enum tfa98xx_error tfa98xx_set_stream_state(int stream_state)
 
 	if (devcount < 1) {
 		pr_err("No or wrong container file loaded\n");
-		return tfa_error_bad_param;
+		return TFA98XX_ERROR_BAD_PARAMETER;
 	}
 
 	for (dev = 0; dev < devcount; dev++) {
@@ -4556,7 +4556,7 @@ int tfa_is_cold_amp(tfa98xx_handle_t handle)
 	int value;
 
 	if ((handles_local[handle].ext_dsp)
-		|| ((handles_local[handle].rev && 0xff) == 0x72))
+		|| ((handles_local[handle].rev & 0xff) == 0x72))
 		/*
 		 * for non-dsp device reading MANSCONF
 		 * (src_set_configured) is a way

@@ -395,14 +395,24 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
 
 static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
 {
-	/* will be applied CONFIG_LGP_DATA_TCPIP_MPTCP */
 	struct tcp_sock *tp = tcp_sk(sk);
+#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
+	struct sock *meta_sk = mptcp(tp) ? mptcp_meta_sk(sk) : sk;
+	struct tcp_sock *meta_tp = tcp_sk(meta_sk);
+#endif
+
 	int room;
 
+	/* Check #1 */
+#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
+	room = min_t(int, meta_tp->window_clamp, tcp_space(meta_sk)) - meta_tp->rcv_ssthresh;
+
+	if (room > 0 && !sk_under_memory_pressure(sk)) {
+#else
 	room = min_t(int, tp->window_clamp, tcp_space(sk)) - tp->rcv_ssthresh;
 
-	/* Check #1 */
 	if (room > 0 && !tcp_under_memory_pressure(sk)) {
+#endif
 		int incr;
 
 		/* Check #2. Increase window, if skb with such overhead
@@ -423,8 +433,11 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
 
 		if (incr) {
 			incr = max_t(int, incr, 2 * skb->len);
-			/* will be applied CONFIG_LGP_DATA_TCPIP_MPTCP */
+#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
+			meta_tp->rcv_ssthresh += min(room, incr);
+#else
 			tp->rcv_ssthresh += min(room, incr);
+#endif
 			inet_csk(sk)->icsk_ack.quick |= 1;
 		}
 	}
@@ -3661,7 +3674,11 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
 	if (before(ack, prior_snd_una)) {
 		/* RFC 5961 5.2 [Blind Data Injection Attack].[Mitigation] */
 		if (before(ack, prior_snd_una - tp->max_window)) {
+#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
+			if (!(flag & MPTCP_FLAG_DATA_ACKED))
+#else
 			if (!(flag & FLAG_NO_CHALLENGE_ACK))
+#endif
 				tcp_send_challenge_ack(sk, skb);
 			return -1;
 		}
@@ -6322,7 +6339,11 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
 	/* step 5: check the ACK field */
 	acceptable = tcp_ack(sk, skb, FLAG_SLOWPATH |
 				      FLAG_UPDATE_TS_RECENT |
+#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
+				      MPTCP_FLAG_DATA_ACKED) > 0;
+#else
 				      FLAG_NO_CHALLENGE_ACK) > 0;
+#endif
 
 	if (!acceptable) {
 		if (sk->sk_state == TCP_SYN_RECV)

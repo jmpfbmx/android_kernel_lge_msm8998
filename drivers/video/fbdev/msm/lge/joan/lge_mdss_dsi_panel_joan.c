@@ -318,6 +318,7 @@ end:
 }
 #endif
 
+#if 0
 void lge_mdss_panel_parse_dt_blmaps_joan(struct device_node *np,
 				   struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 {
@@ -326,11 +327,10 @@ void lge_mdss_panel_parse_dt_blmaps_joan(struct device_node *np,
 	char blmap_rev[30];
 	enum lge_panel_version p_ver = LGE_PANEL_V1;
 
-	struct lge_mdss_dsi_ctrl_pdata *lge_extra = &ctrl_pdata.lge_extra;
-	struct mdss_panel_info *pinfo = &(ctrl_pdata->panel_data.panel_info);
+	struct lge_mdss_dsi_ctrl_pdata *lge_extra = ctrl_pdata->lge_extra;
 
-	pinfo->blmap_size = 512;
-	array = kzalloc(sizeof(u32) * pinfo->blmap_size, GFP_KERNEL);
+	lge_extra->blmap_size = 512;
+	array = kzalloc(sizeof(u32) * lge_extra->blmap_size, GFP_KERNEL);
 
 	if (!array)
 		return;
@@ -339,7 +339,7 @@ void lge_mdss_panel_parse_dt_blmaps_joan(struct device_node *np,
 		p_ver = panel_flag;
 
 	for (i = 0; i < LGE_BLMAPMAX; i++) {
-		snprintf(blmap_rev, sizeof(blmap_rev),lge_extra->lge_blmap_list[i]);
+		snprintf(blmap_rev, sizeof(blmap_rev),lge_extra->blmap_list[i]);
 
 		if(p_ver == LGE_PANEL_V1)
 			strcat(blmap_rev, "_v1");
@@ -351,21 +351,21 @@ void lge_mdss_panel_parse_dt_blmaps_joan(struct device_node *np,
 		pr_info("found %s\n", blmap_rev);
 
 		rc = of_property_read_u32_array(np, blmap_rev, array,
-						pinfo->blmap_size);
+						lge_extra->blmap_size);
 		if (rc) {
 			pr_err("%d, unable to read %s\n", __LINE__, blmap_rev);
 			goto error;
 		}
 
-		pinfo->blmap[i] = kzalloc(sizeof(int) * pinfo->blmap_size,
+		lge_extra->blmap[i] = kzalloc(sizeof(int) * lge_extra->blmap_size,
 				GFP_KERNEL);
 
-		if (!pinfo->blmap[i]){
+		if (!lge_extra->blmap[i]){
 			goto error;
 		}
 
-		for (j = 0; j < pinfo->blmap_size; j++)
-			pinfo->blmap[i][j] = array[j];
+		for (j = 0; j < lge_extra->blmap_size; j++)
+			lge_extra->blmap[i][j] = array[j];
 
 	}
 
@@ -374,8 +374,8 @@ void lge_mdss_panel_parse_dt_blmaps_joan(struct device_node *np,
 
 error:
 	for (i = 0; i < LGE_BLMAPMAX; i++)
-		if (pinfo->blmap[i])
-			kfree(pinfo->blmap[i]);
+		if (lge_extra->blmap[i])
+			kfree(lge_extra->blmap[i]);
 	kfree(array);
 }
 
@@ -402,3 +402,4 @@ int lge_mdss_dsi_panel_init_sub(struct lge_mdss_dsi_ctrl_pdata *lge_extra)
 
 	return rc;
 }
+#endif

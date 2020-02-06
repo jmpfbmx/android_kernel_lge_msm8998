@@ -50,7 +50,7 @@ int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	/* 1st : VDDIO */
 	lge_extra_gpio_set_value(ctrl_pdata, "vddio", 1);
 
-	if(ctrl_pdata.lge_extra->panel_id == LGD_SIW_LG43402_1440_2880_ONCELL_CMD_PANEL)
+	if(ctrl_pdata->lge_extra.panel_id == LGD_SIW_LG43402_1440_2880_ONCELL_CMD_PANEL)
 	{
 		usleep_range(2000,2000);
 
@@ -127,7 +127,7 @@ int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 	usleep_range(1000, 1000);
 
 	/* 3rd : vpnl */
-	if(ctrl_pdata.lge_extra->panel_id == LGD_SIW_LG43402_1440_2880_ONCELL_CMD_PANEL)
+	if(ctrl_pdata->lge_extra.panel_id == LGD_SIW_LG43402_1440_2880_ONCELL_CMD_PANEL)
 	{
 		lge_extra_gpio_set_value(ctrl_pdata, "vpnl", 0);
 		usleep_range(1000,1000);
