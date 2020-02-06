@@ -1,0 +1,64 @@
+/* Copyright (c) 2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&soc {
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		status = "okay";
+
+		hall_ic {
+			label = "hall_ic";
+			gpios = <&pm8998_gpios 5 0x1>;
+			linux,input-type = <5>;
+			linux,code = <0>; /* SW_LID */
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+
+		vol_up {
+			label = "volume_up";
+			gpios = <&pm8998_gpios 6 0x1>;
+			linux,input-type = <1>;
+			linux,code = <115>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+
+		hot1_key {
+			label = "hot1_key";
+			gpios = <&tlmm 79 GPIO_ACTIVE_LOW>;
+			linux,input-type = <1>;
+			linux,code = <377>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+	};
+
+};
+
+&pmi8998_haptics {
+	status = "okay";
+	qcom,actuator-type = "lra";
+	qcom,vmax-mv = <1508>;
+	qcom,ilim-ma = <150>;
+	qcom,wave-shape = "sine";
+	qcom,wave-play-rate-us = <6420>;
+	qcom,en-brake;
+	qcom,brake-pattern = [03 00 00 00];
+	qcom,int-pwm-freq-khz = <1076>;
+	qcom,lra-high-z = "opt1";
+	qcom,lra-auto-res-mode = "none";
+	qcom,lra-res-cal-period = <4>;
+/* move to main soc dtb */
+//	/delete-property/qcom,correct-lra-drive-freq;
+};
