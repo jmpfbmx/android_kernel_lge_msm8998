@@ -4507,7 +4507,7 @@ static void tcp_drop(struct sock *sk, struct sk_buff *skb)
 /* This one checks to see if we can put data from the
  * out_of_order queue into the receive_queue.
  */
-static void tcp_ofo_queue(struct sock *sk)
+void tcp_ofo_queue(struct sock *sk)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	__u32 dsack_high = tp->rcv_nxt;
@@ -4559,11 +4559,7 @@ static void tcp_ofo_queue(struct sock *sk)
 	}
 }
 
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-#else
 static bool tcp_prune_ofo_queue(struct sock *sk);
-#endif
-
 static int tcp_prune_queue(struct sock *sk);
 
 static int tcp_try_rmem_schedule(struct sock *sk, struct sk_buff *skb,
@@ -4580,11 +4576,7 @@ static int tcp_try_rmem_schedule(struct sock *sk, struct sk_buff *skb,
 			return -1;
 
 		if (!sk_rmem_schedule(sk, skb, size)) {
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-			if (!tcp_sk(sk)->ops->prune_ofo_queue(sk))
-#else
 			if (!tcp_prune_ofo_queue(sk))
-#endif
 				return -1;
 
 			if (!sk_rmem_schedule(sk, skb, size))
@@ -4594,7 +4586,7 @@ static int tcp_try_rmem_schedule(struct sock *sk, struct sk_buff *skb,
 	return 0;
 }
 
-static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct rb_node **p, *q, *parent;
@@ -5144,11 +5136,7 @@ new_range:
  * Drop at least 12.5 % of sk_rcvbuf to avoid malicious attacks.
  * Return true if queue was pruned.
  */
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-bool tcp_prune_ofo_queue(struct sock *sk)
-#else
 static bool tcp_prune_ofo_queue(struct sock *sk)
-#endif
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct rb_node *node, *prev;
@@ -5224,11 +5212,7 @@ static int tcp_prune_queue(struct sock *sk)
 
 	/* Collapsing did not help, destructive actions follow.
 	 * This must not ever occur. */
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-	tp->ops->prune_ofo_queue(sk);
-#else
 	tcp_prune_ofo_queue(sk);
-#endif
 
 	if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf)
 		return 0;

@@ -660,7 +660,7 @@ struct adm_cmd_set_pp_params {
 #define ADM_CMD_GET_MTMX_STRTR_DEV_PARAMS_V1	0x00010368
 #define ADM_CMDRSP_GET_MTMX_STRTR_DEV_PARAMS_V1	0x00010369
 
-/* Payload of the #define ADM_CMD_SET_MTMX_STRTR_DEV_PARAMS_V1 command.
+/* Payload of the #define\A0ADM_CMD_SET_MTMX_STRTR_DEV_PARAMS_V1 command.
  * If the data_payload_addr_lsw and data_payload_addr_msw element
  * are NULL, a series of struct param_hdr_v3 structures immediately
  * follows, whose total size is payload_size bytes.
@@ -928,6 +928,15 @@ struct adm_cmd_set_pp_params_v5 {
 	 * in shared memory. This is used for parsing the parameter
 	 * payload.
 	 */
+} __packed;
+
+struct adm_param_data_v5 {
+	u32                  module_id;
+	
+	u32                  param_id;
+	
+	u16                  param_size;
+	u16                  reserved;
 } __packed;
 
 struct audproc_mfc_param_media_fmt {
