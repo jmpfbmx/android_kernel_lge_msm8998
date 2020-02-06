@@ -13391,6 +13391,7 @@ static int msm_routing_get_tx_cfg_control(struct snd_kcontrol *kcontrol,
     int copp_idx;
     uint32_t param_length = sizeof(struct tx_control_param_t);
 
+    struct param_hdr_v3 param_hdr;
     pr_info("%s : enter \n", __func__);
 
     copp_idx = adm_get_default_copp_idx(SLIMBUS_0_TX);
@@ -13409,8 +13410,14 @@ static int msm_routing_get_tx_cfg_control(struct snd_kcontrol *kcontrol,
         }
     }
 
-    rc = adm_get_params(SLIMBUS_0_TX, copp_idx, AUDIO_MODULE_AC, AUDIO_PARAM_AC,
-        param_length + sizeof(struct adm_param_data_v5), (char *)param_value);
+    memset(&param_hdr, 0, sizeof(param_hdr));	
+    param_hdr.module_id = AUDIO_MODULE_AC;	
+    param_hdr.instance_id = INSTANCE_ID_0;	
+    param_hdr.param_id = AUDIO_PARAM_AC;	
+    param_hdr.param_size = param_length + sizeof(struct param_hdr_v3) ;	
+    rc = adm_get_pp_params(SLIMBUS_0_TX, copp_idx, ADM_CLIENT_ID_DEFAULT, NULL,	
+			       &param_hdr, (char *) param_value);
+
     if (rc) {
         pr_err("%s: get parameters failed rc=%d\n", __func__, rc);
         rc = -EINVAL;

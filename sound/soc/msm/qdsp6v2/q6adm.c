@@ -1297,10 +1297,10 @@ static int adm_process_get_param_response(u32 opcode, u32 idx, u32 *payload,
 			data_size / sizeof(*adm_get_parameters);
 		pr_debug("%s: GET_PP PARAM: received parameter length: 0x%x\n",
 			 __func__, adm_get_parameters[idx]);
-#if defined(CONFIG_SND_LGE_TX_NXP_LIB)
-                pr_info("%s: GET_PP PARAM:received data->payload_size: %d, copp_idx=%d, payload[0](status)=%d, payload[1](module id)=0x%x, payload[2](param id)=0x%x, payload[3](param size)=%d\n",
-                    __func__, data->payload_size, copp_idx, payload[0], payload[1], payload[2], payload[3]);
-#endif
+//#if defined(CONFIG_SND_LGE_TX_NXP_LIB)
+//                pr_info("%s: GET_PP PARAM:received payload_size: %d, copp_idx=%d, payload[0](status)=%d, payload[1](module id)=0x%x, payload[2](param id)=0x%x, payload[3](param size)=%d\n",
+//                    __func__, payload_size, copp_idx, payload[0], payload[1], payload[2], payload[3]);
+//#endif
 		/* store params after param_size */
 		memcpy(&adm_get_parameters[idx + 1], param_data, data_size);
 		return 0;
